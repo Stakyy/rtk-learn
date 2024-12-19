@@ -1,9 +1,13 @@
-import { combineReducers, configureStore, createSelector } from "@reduxjs/toolkit";
+import {
+  combineReducers,
+  configureStore,
+  createSelector,
+} from "@reduxjs/toolkit";
 import { useDispatch, useSelector, useStore } from "react-redux";
 
 export type UserId = string;
 
- export type User = {
+export type User = {
   id: UserId;
   name: string;
   description: string;
@@ -27,12 +31,7 @@ type CounterState = {
 
 export type CounterId = string;
 
-type CountersState = Record<CounterId, CounterState | undefined>
-
-type State = {
-  counters: CountersState;
-  users: UsersState;
-};
+type CountersState = Record<CounterId, CounterState | undefined>;
 
 export type UserSelectedAction = {
   type: "userSelected";
@@ -80,66 +79,72 @@ const initialUsersState: UsersState = {
 };
 const initialCounterState: CounterState = { counter: 0 };
 
-const initialCountersState: CountersState = {}
+const initialCountersState: CountersState = {};
 
-const usersReducer = (state = initialUsersState, action: Action): UsersState => {
+const usersReducer = (
+  state = initialUsersState,
+  action: Action
+): UsersState => {
   switch (action.type) {
     case "usersStored": {
       const { users } = action.payload;
       return {
-          ...state,
-          entities: users.reduce((acc, user) => {
-            acc[user.id] = user;
-            return acc;
-          }, {} as Record<UserId, User>),
-          ids: users.map((user) => user.id),
+        ...state,
+        entities: users.reduce((acc, user) => {
+          acc[user.id] = user;
+          return acc;
+        }, {} as Record<UserId, User>),
+        ids: users.map((user) => user.id),
       };
     }
     case "userSelected": {
       const { userId } = action.payload;
       return {
-          ...state,
-          selectedUserId: userId,
+        ...state,
+        selectedUserId: userId,
       };
     }
     case "userRemoveSelected": {
       return {
-          ...state,
-          selectedUserId: undefined,
+        ...state,
+        selectedUserId: undefined,
       };
     }
     default:
       return state;
   }
-}
-const countersReducer = (state = initialCountersState, action: Action): CountersState => {
+};
+const countersReducer = (
+  state = initialCountersState,
+  action: Action
+): CountersState => {
   switch (action.type) {
     case "increment": {
       const { counterId } = action.payload;
       const currentCounter = state[counterId] ?? initialCounterState;
       return {
-          ...state,
-          [counterId]: {
-            ...currentCounter,
-            counter: currentCounter.counter + 1,
-          },
+        ...state,
+        [counterId]: {
+          ...currentCounter,
+          counter: currentCounter.counter + 1,
+        },
       };
     }
     case "decrement": {
       const { counterId } = action.payload;
       const currentCounter = state[counterId] ?? initialCounterState;
       return {
-          ...state,
-          [counterId]: {
-            ...currentCounter,
-            counter: currentCounter.counter - 1,
-          },
+        ...state,
+        [counterId]: {
+          ...currentCounter,
+          counter: currentCounter.counter - 1,
+        },
       };
     }
     default:
       return state;
   }
-}
+};
 
 // const reducer = (state = initialState, action: Action): State => {
 //   return {
@@ -150,8 +155,8 @@ const countersReducer = (state = initialCountersState, action: Action): Counters
 
 const reducer = combineReducers({
   users: usersReducer,
-  counters: countersReducer
-})
+  counters: countersReducer,
+});
 export const store = configureStore({
   reducer: reducer,
 });
@@ -170,4 +175,4 @@ export type AppDispatch = typeof store.dispatch;
 export const useAppSelector = useSelector.withTypes<AppState>();
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const useAppStore = useStore.withTypes<typeof store>();
-export const createAppSellector = createSelector.withTypes<AppState>()
+export const createAppSellector = createSelector.withTypes<AppState>();
