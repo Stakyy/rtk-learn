@@ -1,29 +1,11 @@
 import React, { memo, useState } from "react";
 import {
-  AppState,
-  createAppSellector,
   useAppDispatch,
   useAppSelector,
-  UserId,
-  UserRemoveSelectedAction,
-  UserSelectedAction,
-} from "./store";
+} from "../../store";
+import { selectSelectedUserId, selectSortedUsers, UserId, UserRemoveSelectedAction, UserSelectedAction } from "./users.slice";
 
-const selectSortedUsers = createAppSellector(
-  (state: AppState) => state.users.ids,
-  (state: AppState) => state.users.entities,
-  (_: AppState, sort: "asc" | "desc") => sort,
-  (ids, entities, sort) =>
-    ids
-      .map((id) => entities[id])
-      .sort((a, b) => {
-        if (sort === "asc") {
-          return a.name.localeCompare(b.name);
-        } else {
-          return b.name.localeCompare(a.name);
-        }
-      })
-);
+
 
 
 
@@ -31,7 +13,7 @@ export function UsersList() {
   const [sortType, setSortType] = useState<"asc" | "desc">("asc");
 
 
-  const selectedUserId = useAppSelector((state) => state.users.selectedUserId)
+  const selectedUserId = useAppSelector(selectSelectedUserId)
 
   const sortedUsers = useAppSelector(state => selectSortedUsers(state, sortType))
 
