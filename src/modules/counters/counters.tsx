@@ -2,7 +2,8 @@ import {
     useAppSelector,
   } from "../../store";
   import { useDispatch } from "react-redux";
-import { CounterId, DecrementAction, IncrementAction, selectCounter } from "./counters.slice";
+import { CounterId, incrementAction, decrementAction, selectCounter } from "./counters.slice";
+// import { bindActionCreators } from "@reduxjs/toolkit";
   
   export function Counters() {
     return (
@@ -19,16 +20,18 @@ import { CounterId, DecrementAction, IncrementAction, selectCounter } from "./co
       selectCounter(state, counterId)
     );
     console.log("render counter", counterId);
+
+    // const actions = bindActionCreators({
+    //   incrementAction,
+    //   decrementAction
+    // }, dispatch)
   
     return (
       <div className="flex flex-row items-center justify-center gap-5 ">
         counter {counterState?.counter}
         <button
           onClick={() =>
-            dispatch({
-              type: "increment",
-              payload: { counterId },
-            } satisfies IncrementAction)
+            dispatch(incrementAction({counterId}))
           }
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
@@ -36,10 +39,7 @@ import { CounterId, DecrementAction, IncrementAction, selectCounter } from "./co
         </button>
         <button
           onClick={() =>
-            dispatch({
-              type: "decrement",
-              payload: { counterId },
-            } satisfies DecrementAction)
+            dispatch(decrementAction({counterId}))
           }
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
