@@ -1,64 +1,51 @@
+import { createAction, createReducer } from "@reduxjs/toolkit";
 import { AppState } from "../../store";
 
 type CounterState = {
   counter: number;
 };
-
 export type CounterId = string;
 
 type CountersState = Record<CounterId, CounterState | undefined>;
 
-export type IncrementAction = {
-  type: "increment";
-  payload: {
-    counterId: CounterId;
-  };
-};
+export const incrementAction = createAction<{
+  counterId: CounterId;
+}>("countres/increment");
 
-export type DecrementAction = {
-  type: "decrement";
-  payload: {
-    counterId: CounterId;
-  };
-};
-
-type Action = IncrementAction | DecrementAction;
+export const decrementAction = createAction<{
+  counterId: CounterId;
+}>("countres/decrement");
 
 const initialCounterState: CounterState = { counter: 0 };
+const initialCountresState: CountersState = {};
 
-const initialCountersState: CountersState = {};
+export const countersReducer = createReducer(
+  initialCountresState,
+  (builder) => {
+    builder.addCase(incrementAction, (state, action) => {
+      const { counterId } = action.payload;
+      console.log('couterId', counterId)
 
-export const countersReducer = (
-  state = initialCountersState,
-  action: Action
-): CountersState => {
-  switch (action.type) {
-    case "increment": {
+      if (!state[counterId]) {
+        state[counterId] = initialCounterState;
+      }
+      console.log('state', state)
+
+      state[counterId].counter++;
+    });
+    builder.addCase(decrementAction, (state, action) => {
+        
       const { counterId } = action.payload;
-      const currentCounter = state[counterId] ?? initialCounterState;
-      return {
-        ...state,
-        [counterId]: {
-          ...currentCounter,
-          counter: currentCounter.counter + 1,
-        },
-      };
-    }
-    case "decrement": {
-      const { counterId } = action.payload;
-      const currentCounter = state[counterId] ?? initialCounterState;
-      return {
-        ...state,
-        [counterId]: {
-          ...currentCounter,
-          counter: currentCounter.counter - 1,
-        },
-      };
-    }
-    default:
-      return state;
+      console.log('couterId', counterId)
+      if (!state[counterId]) {
+        state[counterId] = initialCounterState;
+      }
+      console.log('state', state)
+
+      state[counterId].counter--;
+    });
   }
-};
+);
 
 export const selectCounter = (state: AppState, counterId: CounterId) =>
   state.counters[counterId];
