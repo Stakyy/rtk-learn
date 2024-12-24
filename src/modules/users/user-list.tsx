@@ -1,21 +1,48 @@
-import React, { memo, useState } from "react";
-import {
-  useAppDispatch,
-  useAppSelector,
-} from "../../store";
-import { selectSelectedUserId, selectSortedUsers, UserId, UserRemoveSelectedAction, UserSelectedAction } from "./users.slice";
-
-
-
-
+import React, { memo, useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector, useAppStore } from "../../store";
+import { UserId, usersSlice } from "./users.slice";
+import { api } from "../../shared/api";
+import { useDispatch } from "react-redux";
+import { fetchUsers } from "./model/fetch-users";
 
 export function UsersList() {
+  const dispatch = useDispatch();
+  const appStore = useAppStore();
   const [sortType, setSortType] = useState<"asc" | "desc">("asc");
 
+  const isPending = useAppSelector(
+    usersSlice.selectors.selectIsFetchUsersPending
+  );
 
-  const selectedUserId = useAppSelector(selectSelectedUserId)
+  useEffect(() => {
+    // const isIdle = (usersSlice.selectors.selectIsFetchUsersIdle(appStore.getState()));
 
-  const sortedUsers = useAppSelector(state => selectSortedUsers(state, sortType))
+    // if(!isIdle){
+    //   return;
+    // }
+    // dispatch(usersSlice.actions.fetchUsersPending());
+    // api
+    //   .getUsers()
+    //   .then((users) => {
+    //     dispatch(usersSlice.actions.fetchUsersSuccess({ users }));
+    //   })
+    //   .catch(() => {
+    //     dispatch(usersSlice.actions.fetchUsersFailed());
+    //   });
+    fetchUsers(appStore.dispatch, appStore.getState);
+  }, [dispatch, appStore]);
+
+  const selectedUserId = useAppSelector(
+    usersSlice.selectors.selectSelectedUserId
+  );
+
+  const sortedUsers = useAppSelector((state) =>
+    usersSlice.selectors.selectSorted(state, sortType)
+  );
+
+  if (isPending) {
+    return <div>Loading... </div>;
+  }
 
   return (
     <div className="flex flex-col items-center">
@@ -52,10 +79,7 @@ const UserListItem = memo( function UserListItem({ userId }: { userId: UserId })
   const user = useAppSelector(state => state.users.entities[userId])
   const dispatch = useAppDispatch();
   const handleUserClick = () => {
-    dispatch({
-      type: "userSelected",
-      payload: { userId: user.id },
-    } satisfies UserSelectedAction);
+    dispatch(usersSlice.actions.selected({ userId }));
   };
   return (
     <li key={user.id} className="py-2" onClick={handleUserClick}>

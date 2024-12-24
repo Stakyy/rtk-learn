@@ -1,10 +1,6 @@
-import {
-  combineReducers,
-  configureStore,
-  createSelector,
-} from "@reduxjs/toolkit";
+import { configureStore, createSelector } from "@reduxjs/toolkit";
 import { useDispatch, useSelector, useStore } from "react-redux";
-import { initialUsersList, usersReducer, UsersStoredAction } from "./modules/users/users.slice";
+import { usersSlice } from "./modules/users/users.slice";
 import { countersReducer } from "./modules/counters/counters.slice";
 
 
@@ -22,13 +18,6 @@ const reducer = combineReducers({
 export const store = configureStore({
   reducer: reducer,
 });
-
-store.dispatch({
-  type: "usersStored",
-  payload: { users: initialUsersList },
-} satisfies UsersStoredAction);
-
-
 
 export type AppState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
