@@ -7,6 +7,7 @@ function App() {
     <div className="container p-5 flex flex-col gap-5">
       <Counters />
       <UsersList />
+      <UsersList />
     </div>
   );
 }
