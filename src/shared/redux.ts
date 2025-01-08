@@ -28,6 +28,8 @@ export const createAppAsyncThunk = createAsyncThunk.withTypes<{
   extra: typeof extraArgument;
 }>();
 
+export type ExtraArgument = typeof extraArgument
+
 export const createSlice = buildCreateSlice({
   creators: {asyncThunk: asyncThunkCreator}
 })
