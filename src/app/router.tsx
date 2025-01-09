@@ -28,9 +28,7 @@ export const router = createBrowserRouter([
         path: "users",
         element: <UsersList />,
         loader: () => {
-          loadStore().then(() => {
-            store.dispatch(fetchUsers());
-          });
+          loadStore().then(() => {});
 
           return null;
         },
@@ -39,9 +37,7 @@ export const router = createBrowserRouter([
         path: "users/:id",
         element: <UserInfo />,
         loader: ({ params }) => {
-          loadStore().then(() => {
-            store.dispatch(fetchUser(params.id ?? ""));
-          });
+          loadStore().then(() => {});
 
           return null;
         },

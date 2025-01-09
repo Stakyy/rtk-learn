@@ -1,21 +1,38 @@
-import React, { memo, useState } from "react";
-import { useAppSelector } from "../../shared/redux";
-import { UserId, usersSlice } from "./users.slice";
+import React, { memo, useMemo, useState } from "react";
+import { User,  } from "./users.slice";
 
 import { useNavigate } from "react-router-dom";
+import { usersApi } from "./api";
 
 export function UsersList() {
   const [sortType, setSortType] = useState<"asc" | "desc">("asc");
 
-  const isPending = useAppSelector(
-    usersSlice.selectors.selectIsFetchUsersPending
-  );
+  const {data: users, isLoading} = usersApi.useGetUsersQuery()
 
-  const sortedUsers = useAppSelector((state) =>
-    usersSlice.selectors.selectSorted(state, sortType)
-  );
+  const sortedUsers = useMemo(() => {
+    return [...(users) ?? []].sort((a, b) => {
+      if (sortType === "asc") {
+        return a.name.localeCompare(b.name);
+      } else {
+        return b.name.localeCompare(a.name);
+      }
+    })
+  }, [sortType, users])
 
-  if (isPending) {
+  /*
+   ids
+            .map((id) => entities[id])
+            .filter((user): user is User => !!user)
+            .sort((a, b) => {
+              if (sort === "asc") {
+                return a.name.localeCompare(b.name);
+              } else {
+                return b.name.localeCompare(a.name);
+              }
+            })
+  */
+
+  if (isLoading) {
     return <div>Loading... </div>;
   }
 
@@ -37,8 +54,8 @@ export function UsersList() {
           </button>
         </div>
         <ul className="list-none">
-          {sortedUsers.map((user) => (
-            <UserListItem userId={user.id} key={user.id} />
+          {sortedUsers?.map((user) => (
+            <UserListItem user={user} key={user.id} />
           ))}
         </ul>
       </div>
@@ -47,14 +64,13 @@ export function UsersList() {
 }
 
 const UserListItem = memo(function UserListItem({
-  userId,
+  user,
 }: {
-  userId: UserId;
+  user: User;
 }) {
   const navigate = useNavigate();
-  const user = useAppSelector((state) => state.users.entities[userId]);
   const handleUserClick = () => {
-    navigate(userId, { relative: "path" });
+    navigate(user.id, { relative: "path" });
   };
   if (!user) {
     return null;

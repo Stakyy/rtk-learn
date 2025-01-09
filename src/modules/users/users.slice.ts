@@ -84,16 +84,16 @@ export const usersSlice = createSlice({
         },
       }
     ),
-    /*
     
-    deleteUserPending: (state) => {state.deleteUserStatus = 'pending'},
-    deleteUserSuccess: (state, action: PayloadAction<{userId: UserId}>) => {
+    
+    deleteUserPending: creator.reducer( (state) => {state.deleteUserStatus = 'pending'}),
+    deleteUserSuccess: creator.reducer((state, action: PayloadAction<{userId: UserId}>) => {
       state.deleteUserStatus = 'success';
       delete state.entities[action.payload.userId];
       state.ids = state.ids.filter((id) => id != action.payload.userId)
-    },
-    deleteUserFailed: (state) => {state.deleteUserStatus = 'failed'},
-    */
+    }),
+    deleteUserFailed: creator.reducer((state) => {state.deleteUserStatus = 'failed'}),
+  
   }),
   extraReducers: (builder) => {
     builder.addCase(fetchUsers.pending, (state) => {
