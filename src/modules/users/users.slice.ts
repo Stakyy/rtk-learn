@@ -18,24 +18,26 @@ export const initialUsersList: User[] = Array.from(
 );
 
 type UsersState = {
-  entities: Record<UserId, User>;
+  entities: Record<UserId, User | undefined>;
   ids: UserId[];
-  selectedUserId: UserId | undefined;
   fetchUsersStatus: "idle" | "pending" | "success" | "failed";
+  fetchUserStatus: "idle" | "pending" | "success" | "failed";
+  deleteUserStatus: "idle" | "pending" | "success" | "failed";
 };
 
 const initialUsersState: UsersState = {
   entities: {},
   ids: [],
-  selectedUserId: undefined,
   fetchUsersStatus: "idle",
+  fetchUserStatus: 'idle',
+  deleteUserStatus: 'idle'
 };
 
 export const usersSlice = createSlice({
   name: "users",
   initialState: initialUsersState,
   selectors: {
-    selectSelectedUserId: (state) => state.selectedUserId,
+    selectUserById: (state, userId: UserId) => state.entities[userId],
     selectSorted: createSelector(
       (state: UsersState) => state.ids,
       (state: UsersState) => state.entities,
@@ -43,6 +45,7 @@ export const usersSlice = createSlice({
       (ids, entities, sort) =>
         ids
           .map((id) => entities[id])
+          .filter((user): user is User => !!user)
           .sort((a, b) => {
             if (sort === "asc") {
               return a.name.localeCompare(b.name);
@@ -53,14 +56,10 @@ export const usersSlice = createSlice({
     ),
     selectIsFetchUsersPending: (state) => state.fetchUsersStatus === "pending",
     selectIsFetchUsersIdle: (state) => state.fetchUsersStatus === "idle",
+    selectIsFetchUserPending: (state) => state.fetchUserStatus === 'pending',
+    selectIsDeleteUserPending: (state) => state.deleteUserStatus === 'pending',
   },
   reducers: {
-    selected: (state, action: PayloadAction<{ userId: UserId }>) => {
-      state.selectedUserId = action.payload.userId;
-    },
-    selectRemoved: (state) => {
-      state.selectedUserId = undefined;
-    },
     fetchUsersPending: (state) => {
       state.fetchUsersStatus = "pending";
     },
@@ -77,5 +76,20 @@ export const usersSlice = createSlice({
     fetchUsersFailed: (state) => {
       state.fetchUsersStatus = "failed";
     },
+    fetchUserPending: (state) => {state.fetchUserStatus = 'pending'},
+    fetchUserSuccess: (state, action: PayloadAction<{user: User}>) => {
+      const {user} = action.payload;
+      state.fetchUserStatus = 'success';
+      state.entities[user.id] = user
+    },
+    fetchUserFailed: (state) => {state.fetchUserStatus = 'failed'},
+    deleteUserPending: (state) => {state.deleteUserStatus = 'pending'},
+    deleteUserSuccess: (state, action: PayloadAction<{userId: UserId}>) => {
+      state.deleteUserStatus = 'success';
+      delete state.entities[action.payload.userId];
+      state.ids = state.ids.filter((id) => id != action.payload.userId)
+    },
+    deleteUserFailed: (state) => {state.deleteUserStatus = 'failed'},
+    
   },
 });
