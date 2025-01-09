@@ -1,21 +1,16 @@
-import { AppThunk } from "../../../store";
+import { createAppAsyncThunk } from "../../../shared/redux";
 import { usersSlice } from "../users.slice";
 
-export const fetchUsers =
-  ({ refetch }: { refetch?: boolean } = {}): AppThunk<Promise<void>> =>
-  async (dispatch, getState, { api }) => {
-    const isIdle = usersSlice.selectors.selectIsFetchUsersIdle(getState());
+export const fetchUsers = createAppAsyncThunk(
+  "users/fetchUsers",
+  async (_?: { refetch?: boolean } = {}, thunkApi) => 
+     thunkApi.extra.api.getUsers(), {condition(params, {getState}) {
+       const isIdle = usersSlice.selectors.selectIsFetchUsersIdle(getState())
 
-    if (!isIdle && !refetch) {
-      return;
-    }
-    dispatch(usersSlice.actions.fetchUsersPending());
-    return api
-      .getUsers()
-      .then((users) => {
-        dispatch(usersSlice.actions.fetchUsersSuccess({ users }));
-      })
-      .catch(() => {
-        dispatch(usersSlice.actions.fetchUsersFailed());
-      });
-  };
+       if (!params?.refetch && !isIdle){
+        return false
+       }
+       return true
+     }}
+  
+);
