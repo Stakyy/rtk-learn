@@ -1,13 +1,9 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { UserId, usersSlice } from "./users.slice";
-import { useAppDispatch, useAppSelector } from "../../shared/redux";
-
-import { deleteUser } from "./model/delete-user";
+import { UserId } from "./users.slice";
 import { usersApi } from "./api";
 import { skipToken } from "@reduxjs/toolkit/query";
 
 export function UserInfo() {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { id } = useParams<{ id: UserId }>();
 
