@@ -17,13 +17,12 @@ export const usersApi = baseApi.injectEndpoints({
         }),
         getUser: create.query<User, UserId>({
             query: (userId) => `/users/${userId}`,
-            providesTags: (_, __, userId) =>  ["Users", {type: 'Users', id: userId}],
+            providesTags: ["Users"],
             transformResponse: (res: unknown) => UserDtoSchema.parse(res)
 
         }),
         deleteUser: create.mutation<void, UserId>({
             query: (userId) => ({method: "DELETE", url: `/users/${userId}`}),
-            invalidatesTags: (_, __, userId) => [{type: 'Users', id: "LIST"}, {type: 'Users', id: userId}]
         })
     }),
     overrideExisting: true
