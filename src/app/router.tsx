@@ -1,5 +1,5 @@
 import { createBrowserRouter, Link, Outlet, redirect } from "react-router-dom";
-import { UsersList } from "../modules/users/user-list";
+import { UsersList } from "../modules/users/users-list";
 import { Counters } from "../modules/counters/counters";
 import { UserInfo } from "../modules/users/user-info";
 import { store } from "./store";

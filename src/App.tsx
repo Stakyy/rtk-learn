@@ -1,6 +1,6 @@
 
 import { Counters } from "./modules/counters/counters";
-import { UsersList } from "./modules/users/user-list";
+import { UsersList } from "./modules/users/users-list";
 
 function App() {
   return (
